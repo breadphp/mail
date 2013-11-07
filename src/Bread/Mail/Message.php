@@ -1,12 +1,15 @@
 <?php
 namespace Bread\Mail;
 
-use Mail;
-use Mail_mime;
 use Bread\Configuration\Manager as Configuration;
+use PHPMailer;
 
 class Message
 {
+
+    const TEXT_PLAIN = 0;
+
+    const TEXT_HTML = 1;
 
     protected $from;
 
@@ -20,24 +23,19 @@ class Message
 
     protected $body;
 
-    protected $isHTML = false;
-    
-    protected $headers = array();
+    protected $type;
 
     /**
      * The file name of the file to attach or the file contents itself
      */
     protected $attachments = array();
 
-    public function __construct($from = null, $subject = null, $body = null, array $to = array(), array $cc = array(), array $bcc = array(), array $attachments = array())
+    public function __construct(array $params = array())
     {
-        $this->from = $from;
-        $this->to = $to;
-        $this->cc = $cc;
-        $this->bcc = $bcc;
-        $this->subject = $subject;
-        $this->body = $body;
-        $this->attachments = $attachments;
+        $this->type = static::TEXT_PLAIN;
+        foreach ($params as $attribute => $value) {
+            $this->$attribute = $value;
+        }
     }
 
     public function __set($property, $value)
@@ -83,32 +81,26 @@ class Message
 
     public function send()
     {
-        if (empty($this->to) && empty($this->cc) && empty($this->bcc)) {
-            return false;
+        $mail = new PHPMailer();
+        $mail->isSMTP();
+        $mail->Host = Configuration::get(__CLASS__, 'smtp.host');
+        $mail->SMTPAuth = true;
+        $mail->Username = Configuration::get(__CLASS__, 'smtp.username');
+        $mail->Password = Configuration::get(__CLASS__, 'smtp.password');
+        // $mail->SMTPSecure = 'tls';
+        $mail->From = $this->from;
+        $mail->Subject = $this->subject;
+        $mail->Body = $this->body;
+        $mail->isHTML($this->type);
+        foreach ($this->to as $to) {
+            $mail->addAddress($to);
         }
-        $smtpHeaders = array(
-            'From' => $this->from,
-            'Subject' => $this->subject,
-            'To' => $this->to,
-            'Cc' => $this->cc,
-            'Bcc' => $this->bcc,
-            'Content-Type' => $this->isHTML ? 'text/html' : 'text/plain'
-        );
-        $mime = new Mail_mime();
-        if ($this->isHTML) {
-            $mime->setHTMLBody($this->body);
-        } else {
-            $mime->setTXTBody($this->body);
+        foreach ($this->cc as $cc) {
+            $mail->addCC($cc);
         }
-        foreach ($this->attachments as $file) {
-            // TODO content type
-            // $finfo = new finfo(FILEINFO_MIME_TYPE);
-            // $type = trim($finfo->buffer($file) . PHP_EOL);
-            $mime->addAttachment($file);
+        foreach ($this->bcc as $bcc) {
+            $mail->addBCC($bcc);
         }
-        // For versions older than 1.6.0 Mail_Mime::get() has to be called before Mail_Mime::headers().
-        $body = $mime->getMessage();
-        $mail = Mail::factory('smtp', Configuration::get(static::class, 'smtp.params'));
-        return $mail->send(array_merge($this->to, $this->cc, $this->bcc), $mime->headers($smtpHeaders), $body);
+        return $mail->send() ? true : $mail->ErrorInfo;
     }
 }

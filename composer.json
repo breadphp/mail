@@ -15,20 +15,13 @@
 		"CC-BY-3.0"
 	],
 	"require" : {
-		"pear-pear/Net_SMTP" : "~1.6",
-		"pear-pear/Mail" : "~1.2",
+		"phpmailer/phpmailer" : "~5.2",
 		"php" : ">=5.5",
-		"pear-pear/Mail_Mime" : "~1.8",
 		"bread/configuration" : "~1.2"
 	},
 	"autoload" : {
 		"psr-0" : {
 			"Bread\\Mail" : "src"
 		}
-	},
-	"repositories" : [{
-			"type" : "pear",
-			"url" : "http://pear.php.net"
-		}
-	]
+	}
 }
