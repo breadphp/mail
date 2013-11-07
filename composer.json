@@ -1,0 +1,34 @@
+{
+	"name" : "bread/mail",
+	"description" : "Bread mail library",
+	"type" : "library",
+	"authors" : [{
+			"name" : "Alex Tomasello",
+			"email" : "alex.tomasello@saiv.it"
+		}
+	],
+	"keywords" : [
+		"bread mail"
+	],
+	"homepage" : "https://github.com/breadphp/mail",
+	"license" : [
+		"CC-BY-3.0"
+	],
+	"require" : {
+		"pear-pear/Net_SMTP" : "~1.6",
+		"pear-pear/Mail" : "~1.2",
+		"php" : ">=5.5",
+		"pear-pear/Mail_Mime" : "~1.8",
+		"bread/configuration" : "~1.2"
+	},
+	"autoload" : {
+		"psr-0" : {
+			"Bread\\Mail" : "src"
+		}
+	},
+	"repositories" : [{
+			"type" : "pear",
+			"url" : "http://pear.php.net"
+		}
+	]
+}
