@@ -13,6 +13,8 @@ class Message
 
     protected $from;
 
+    protected $fromName;
+
     protected $to = array();
 
     protected $cc = array();
@@ -59,47 +61,60 @@ class Message
         unset($this->$property);
     }
 
-    public function addTo($to)
+    public function from($from, $name = '')
     {
-        $this->to = array_unique(array_merge($this->to, (array) $to));
+        $this->from = $from;
+        $this->fromName = name;
     }
 
-    public function addCc($cc)
+    public function addTo($to, $name = '')
     {
-        $this->cc = array_unique(array_merge($this->cc, (array) $cc));
+        $this->to = array_merge($this->to, array(
+            $to => $name
+        ));
     }
 
-    public function addBcc($bcc)
+    public function addCc($cc, $name = '')
     {
-        $this->bcc = array_unique(array_merge($this->bcc, (array) $bcc));
+        $this->cc = array_merge($this->cc, array(
+            $cc => $name
+        ));
+    }
+
+    public function addBcc($bcc, $name = '')
+    {
+        $this->bcc = array_merge($this->bcc, array(
+            $bcc => $name
+        ));
     }
 
     public function addAttachment($attachment)
     {
-        $this->attachments = array_unique(array_merge($this->attachments, (array) $attachment));
+        $this->attachments = array_merge($this->attachments, (array) $attachment);
     }
 
     public function send()
     {
         $mail = new PHPMailer();
+        $mail->CharSet = 'UTF-8';
+        $mail->SMTPAuth = true;
         $mail->isSMTP();
         $mail->Host = Configuration::get(__CLASS__, 'smtp.host');
-        $mail->SMTPAuth = true;
         $mail->Username = Configuration::get(__CLASS__, 'smtp.username');
         $mail->Password = Configuration::get(__CLASS__, 'smtp.password');
-        // $mail->SMTPSecure = 'tls';
         $mail->From = $this->from;
+        $mail->FromName = $this->fromName;
         $mail->Subject = $this->subject;
         $mail->Body = $this->body;
         $mail->isHTML($this->type);
-        foreach ($this->to as $to) {
-            $mail->addAddress($to);
+        foreach ($this->to as $to => $name) {
+            $mail->addAddress($to, $name);
         }
-        foreach ($this->cc as $cc) {
-            $mail->addCC($cc);
+        foreach ($this->cc as $cc => $name) {
+            $mail->addCC($cc, $name);
         }
-        foreach ($this->bcc as $bcc) {
-            $mail->addBCC($bcc);
+        foreach ($this->bcc as $bcc => $name) {
+            $mail->addBCC($bcc, $name);
         }
         return $mail->send() ? true : $mail->ErrorInfo;
     }
