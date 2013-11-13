@@ -64,7 +64,7 @@ class Message
     public function from($from, $name = '')
     {
         $this->from = $from;
-        $this->fromName = name;
+        $this->fromName = $name;
     }
 
     public function addTo($to, $name = '')
@@ -98,6 +98,7 @@ class Message
         $mail = new PHPMailer();
         $mail->CharSet = 'UTF-8';
         $mail->SMTPAuth = true;
+        $mail->Encoding = 'quoted-printable';
         $mail->isSMTP();
         $mail->Host = Configuration::get(__CLASS__, 'smtp.host');
         $mail->Username = Configuration::get(__CLASS__, 'smtp.username');
