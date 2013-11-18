@@ -2,6 +2,7 @@
 namespace Bread\Mail;
 
 use Bread\Configuration\Manager as Configuration;
+use Bread\Types\DateTime;
 use PHPMailer;
 
 class Message
@@ -26,6 +27,8 @@ class Message
     protected $body;
 
     protected $type;
+
+    protected $date;
 
     /**
      * The file name of the file to attach or the file contents itself
@@ -57,35 +60,28 @@ class Message
 
     public function __unset($property)
     {
-        $this->validate($property, $null = null);
         unset($this->$property);
     }
 
     public function from($from, $name = '')
     {
         $this->from = $from;
-        $this->fromName = name;
+        $this->fromName = $name;
     }
 
     public function addTo($to, $name = '')
     {
-        $this->to = array_merge($this->to, array(
-            $to => $name
-        ));
+        $this->to[$to] = $name;
     }
 
     public function addCc($cc, $name = '')
     {
-        $this->cc = array_merge($this->cc, array(
-            $cc => $name
-        ));
+        $this->cc[$cc] = $name;
     }
 
     public function addBcc($bcc, $name = '')
     {
-        $this->bcc = array_merge($this->bcc, array(
-            $bcc => $name
-        ));
+        $this->bcc[$bcc] = $name;
     }
 
     public function addAttachment($attachment)
@@ -95,7 +91,9 @@ class Message
 
     public function send()
     {
+        $this->date = new DateTime();
         $mail = new PHPMailer();
+        $mail->Encoding = 'quoted-printable';
         $mail->CharSet = 'UTF-8';
         $mail->SMTPAuth = true;
         $mail->isSMTP();
