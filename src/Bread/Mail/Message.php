@@ -30,9 +30,6 @@ class Message
 
     protected $date;
 
-    /**
-     * The file name of the file to attach or the file contents itself
-     */
     protected $attachments = array();
 
     public function __construct(array $params = array())
