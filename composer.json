@@ -11,17 +11,21 @@
 		"bread mail"
 	],
 	"homepage" : "https://github.com/breadphp/mail",
-	"license" : [
-		"CC-BY-3.0"
-	],
+	"license" : "CC-BY-3.0",
 	"require" : {
-		"phpmailer/phpmailer" : "~5.2",
-		"php" : ">=5.5",
-		"bread/configuration" : "~1.2"
+		"bread/configuration" : "~1.2",
+		"bread/types" : "~0.1",
+		"bread/helpers" : "~0.1",
+		"phpmailer/phpmailer" : "dev-streamAttachments"
 	},
 	"autoload" : {
 		"psr-0" : {
 			"Bread\\Mail" : "src"
 		}
-	}
+	},
+	"repositories" : [{
+			"type" : "vcs",
+			"url" : "https://github.com/tomasell/PHPMailer"
+		}
+	]
 }

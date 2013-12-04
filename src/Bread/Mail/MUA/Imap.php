@@ -90,36 +90,40 @@ class Imap
         $encoding = $structure->encoding;
         switch ($structure->subtype) {
             case 'ALTERNATIVE':
-                if($structure->parts[0]->subtype === 'HTML') {
+                if($structure->parts[0]->subtype === 'PLAIN') {
+                    $message = imap_fetchbody($mailbox, $number, '1');
+                } else {
                     $message = imap_fetchbody($mailbox, $number, '1');
                     $encoding = $structure->parts[0]->encoding;
                     $page = new Page($message);
                     $page->query('blockquote')->remove();
-                    $message = strip_tags((string) $page);
-                } elseif(isset($structure->parts[1]) && $structure->parts[1]->subtype === 'HTML') {
-                    $message = imap_fetchbody($mailbox, $number, '2');
-                    $encoding = $structure->parts[1]->encoding;
-                    $page = new Page($message);
-                    $page->query('blockquote')->remove();
-                    $message = strip_tags((string) $page);
-                } else {
-                    $message = imap_fetchbody($mailbox, $number, '1');
+                    $message = strip_tags(htmlspecialchars_decode((string) $page));
                 }
                 break;
             case 'HTML':
                 $page = new Page(imap_body($mailbox, $number));
                 $page->query('blockquote')->remove();
-                $message = strip_tags((string) $page);
+                $message = htmlspecialchars_decode((string) $page);
                 break;
             case 'PLAIN':
                 $message = imap_body($mailbox, $number);
                 break;
+            case 'MIXED':
+//                 foreach ($structure->parts as $i=>$part) {
+//                     switch ($part->)
+//                 }
         }
         $message = static::decodeBody($message, $structure->encoding);
         $message = preg_replace("/(---BEST-MESSAGE-BEGIN---.*---BEST-MESSAGE-END---)?/ms", '', $message);
         $message = preg_replace("/(On [\d\/]* [\d:]*,.*wrote:.*)$/m", '', $message);
         $message = preg_replace("/(Il giorno [\d]* [\w]* [\d]* [\d:]*,.*scritto:.*)$/ms", '', $message);
         $message = trim(preg_replace("/(^>.*(\n|$))+/mi", '', $message));
+        $message = trim(preg_replace("/(-+Original Message-+\W{1})|(-+Messaggio originale-+)/", '', $message));
+        $message = trim(preg_replace("/(From|Da)(: .*\W{1})/", '', $message));
+        $message = trim(preg_replace("/(Sent|Data)(: .*\W{1})/", '', $message));
+        $message = trim(preg_replace("/(To|A)(: .*\W{1})/", '', $message));
+        $message = trim(preg_replace("/(Cc: .*\W{1})/", '', $message));
+        $message = trim(preg_replace("/(Subject|Ogg|Oggetto)(: .*)($|\W{2,})/", '', $message));
         return $message;
     }
 
@@ -134,9 +138,9 @@ class Imap
     protected static function decodeBody($body, $encoding)
     {
         if ($encoding === 3) {
-            return imap_base64($body);
-        } elseif ( $encoding === 4) {
-            return imap_qprint($body);
+            return base64_decode($body);
+        } elseif ($encoding === 4) {
+            return quoted_printable_decode($body);
         } else {
             return $body;
         }

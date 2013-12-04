@@ -101,6 +101,10 @@ class Message
         $mail->Host = Configuration::get(__CLASS__, 'smtp.host');
         $mail->Username = Configuration::get(__CLASS__, 'smtp.username');
         $mail->Password = Configuration::get(__CLASS__, 'smtp.password');
+        $mail->SMTPSecure = Configuration::get(__CLASS__, 'smtp.secure') ? : ""; //Options: "", "ssl" or "tls"
+        $mail->AuthType = Configuration::get(__CLASS__, 'smtp.auth') ? : "LOGIN"; //Options:LOGIN (default), PLAIN, NTLM, CRAM-MD5
+        $mail->Realm = Configuration::get(__CLASS__, 'smtp.realm');
+        $mail->Workstation = Configuration::get(__CLASS__, 'smtp.username');
         $mail->From = $this->from;
         $mail->FromName = $this->fromName;
         $mail->Subject = $this->subject;
