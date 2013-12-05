@@ -16,16 +16,12 @@
 		"bread/configuration" : "~1.2",
 		"bread/types" : "~0.1",
 		"bread/helpers" : "~0.1",
-		"phpmailer/phpmailer" : "dev-streamAttachments"
+		"bread/media" : "~0.1",
+		"phpmailer/phpmailer" : ">=5.2.7"
 	},
 	"autoload" : {
 		"psr-0" : {
 			"Bread\\Mail" : "src"
 		}
-	},
-	"repositories" : [{
-			"type" : "vcs",
-			"url" : "https://github.com/tomasell/PHPMailer"
-		}
-	]
+	}
 }

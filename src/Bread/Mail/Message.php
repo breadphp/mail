@@ -4,6 +4,7 @@ namespace Bread\Mail;
 use Bread\Configuration\Manager as Configuration;
 use Bread\Types\DateTime;
 use PHPMailer;
+use Bread\Media\File\Model as File;
 
 class Message
 {
@@ -11,6 +12,8 @@ class Message
     const TEXT_PLAIN = 0;
 
     const TEXT_HTML = 1;
+
+    const ENCODING = 'base64';
 
     protected $from;
 
@@ -81,20 +84,19 @@ class Message
         $this->bcc[$bcc] = $name;
     }
 
-    public function addAttachment($attachment)
+    public function addAttachment(File $attachment)
     {
-        $this->attachments = array_merge($this->attachments, (array) $attachment);
+        $this->attachments[] = $attachment;
     }
 
     public function send()
     {
         $this->date = new DateTime();
         $mail = new PHPMailer();
+        $mail->isSMTP();
         $mail->Encoding = 'quoted-printable';
         $mail->CharSet = 'UTF-8';
         $mail->SMTPAuth = true;
-        $mail->Encoding = 'quoted-printable';
-        $mail->isSMTP();
         $mail->Host = Configuration::get(__CLASS__, 'smtp.host');
         $mail->Username = Configuration::get(__CLASS__, 'smtp.username');
         $mail->Password = Configuration::get(__CLASS__, 'smtp.password');
@@ -115,6 +117,9 @@ class Message
         }
         foreach ($this->bcc as $bcc => $name) {
             $mail->addBCC($bcc, $name);
+        }
+        foreach ($this->attachments as $attachment) {
+            $mail->addStringEmbeddedImage(stream_get_contents($attachment->data), $attachment->name, $attachment->name, static::ENCODING, $attachment->type);
         }
         return $mail->send() ? true : $mail->ErrorInfo;
     }
