@@ -12,7 +12,6 @@ use ezcMailFile;
 
 class Imap
 {
-
     public static function fetchMail($server, $username, $password, $mailbox = 'INBOX', $flag = 'UNSEEN')
     {
         $imap = new ezcMailImapTransport($server);
@@ -24,7 +23,8 @@ class Imap
         $mailFetch = array();
         foreach ($messages as $message) {
             $mail = new Message();
-            $mail->from($message->from->email,$message->from->name);
+            $mail->date = (new DateTime())->setTimestamp($message->timestamp);
+            $mail->from($message->from->email, $message->from->name);
             $mail->subject = $message->subject;
             $mail->type = Message::TEXT_PLAIN;
             foreach ($message->to as $to) {
@@ -42,17 +42,9 @@ class Imap
                         $body = htmlspecialchars_decode(strip_tags((string) $page));
                         $mail->type = Message::TEXT_HTML;
                     }
-                    $body = preg_replace("/(---BEST-body-BEGIN---.*---BEST-body-END---)?/ms", '', $body);
-                    $body = preg_replace("/(On [\d\/]* [\d:]*,.*wrote:.*)$/m", '', $body);
-                    $body = preg_replace("/(Il giorno [\d]* [\w]* [\d]* [\d:]*,.*scritto:.*)$/ms", '', $body);
-                    $body = preg_replace("/(^>.*(\n|$))+/mi", '', $body);
-                    $body = preg_replace("/(-+Original body-+\W{1})|(-+Messaggio originale-+)/", '', $body);
-                    $body = preg_replace("/(From|Da)(: .*\W{1})/", '', $body);
-                    $body = preg_replace("/(Sent|Data)(: .*\W{1})/", '', $body);
-                    $body = preg_replace("/(To|A)(: .*\W{1})/", '', $body);
-                    $body = preg_replace("/(Cc: .*\W{1})/", '', $body);
-                    $body = trim(preg_replace("/(Subject|Ogg|Oggetto)(: .*)($|\W{2,})/", '', $body));
-                    $mail->body = $body;
+                    $body = preg_replace("/(-+Original body-+\r?\n|-+Messaggio originale-+\r?\n)(From: .*\r?\n|Da: .*\r?\n)(Sent: .*\r?\n|Data: .*\r?\n|Inviato: .*\r?\n)?(To: .*\r?\n|A: .*\r?\n)(Cc: .*\r?\n)?(Subject: .*\r?\n|Ogg: .*\r?\n|Oggetto: .*\r?\n)/", "", $body);
+                    $body = preg_replace("/(---BEST-MESSAGE-BEGIN---.*---BEST-MESSAGE-END---)?/ms", '', $body);
+                    $mail->body = trim($body);
                 } elseif ($part instanceof ezcMailFile) {
                     $file = new File();
                     $file->name = $part->contentDisposition->fileName;
