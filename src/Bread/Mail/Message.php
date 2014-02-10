@@ -96,7 +96,7 @@ class Message
         $mail->isSMTP();
         $mail->Encoding = 'quoted-printable';
         $mail->CharSet = 'UTF-8';
-        $mail->SMTPAuth = true;
+        $mail->SMTPAuth = Configuration::get(__CLASS__, 'smtp.requireAuthentication');
         $mail->Host = Configuration::get(__CLASS__, 'smtp.host');
         $mail->Username = Configuration::get(__CLASS__, 'smtp.username');
         $mail->Password = Configuration::get(__CLASS__, 'smtp.password');
