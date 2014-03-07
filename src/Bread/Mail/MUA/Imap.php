@@ -42,7 +42,7 @@ class Imap
                         $body = htmlspecialchars_decode(strip_tags((string) $page));
                         $mail->type = Message::TEXT_HTML;
                     }
-                    $body = preg_replace("/(-+Original body-+\r?\n|-+Messaggio originale-+\r?\n)(From: .*\r?\n|Da: .*\r?\n)(Sent: .*\r?\n|Data: .*\r?\n|Inviato: .*\r?\n)?(To: .*\r?\n|A: .*\r?\n)(Cc: .*\r?\n)?(Subject: .*\r?\n|Ogg: .*\r?\n|Oggetto: .*\r?\n)/", "", $body);
+                    $body = preg_replace("/(-+Original body-+\r?\n|-+Messaggio originale-+\r?\n)?(From: .*\r?\n|Da: .*\r?\n)?(Sent: .*\r?\n|Data: .*\r?\n|Inviato: .*\r?\n)?(To: .*\r?\n|A: .*\r?\n)?(Cc: .*\r?\n)?(Subject: .*\r?\n|Ogg: .*\r?\n|Oggetto: .*\r?\n)/ms", "", $body);
                     $body = preg_replace("/(---BEST-MESSAGE-BEGIN---.*---BEST-MESSAGE-END---)?/ms", '', $body);
                     $mail->body = trim($body);
                 } elseif ($part instanceof ezcMailFile) {
