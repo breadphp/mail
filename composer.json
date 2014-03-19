@@ -17,7 +17,8 @@
 		"bread/helpers" : "~0.1",
 		"bread/media" : "~0.1",
 		"bread/types" : "~0.1",
-		"zetacomponents/mail" : ">=1.7"
+		"zetacomponents/mail" : ">=1.7",
+		"zetacomponents/base" : "*"
 	},
 	"autoload" : {
 		"psr-0" : {
