@@ -15,11 +15,9 @@
 	"require" : {
 		"bread/configuration" : "~1.2",
 		"bread/helpers" : "~0.1",
-        "bread/media" : "~0.1",
+		"bread/media" : "~0.1",
 		"bread/types" : "~0.1",
-		"phpmailer/phpmailer" : ">=5.2.7",
-		"zetacomponents/mail" : ">=1.7",
-		"zetacomponents/base" : ">=1.8"
+		"zetacomponents/mail" : ">=1.7"
 	},
 	"autoload" : {
 		"psr-0" : {
