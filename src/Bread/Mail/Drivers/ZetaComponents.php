@@ -73,22 +73,21 @@ class ZetaComponents implements Interfaces\Driver
             $mail->setHeader($header, $value);
         }
         if ($model->to || $model->cc || $model->bcc) {
-            if ($smtp->send($mail)) {
-                if (! $model->messageId) {
-                    $model->messageId = $mail->getHeader('Message-Id');
-                }
-                foreach ($mail->body->getParts() as $part) {
-                    if ($part instanceof ezcMailStreamFile) {
-                        rewind($part->stream);
-                    }
-                }
-                $imap = new ezcMailImapTransport($this->params['host'], $this->params['port']);
-                $imap->authenticate($this->params['user'], $this->params['password']);
-                $imap->append("Sent", $mail->generate(), array(
-                    "SEEN"
-                ));
-                $imap->disconnect();
+            $smtp->send($mail);
+            if (!$model->messageId) {
+                $model->messageId = $mail->getHeader('Message-Id');
             }
+            foreach ($mail->body->getParts() as $part) {
+                if ($part instanceof ezcMailStreamFile) {
+                    rewind($part->stream);
+                }
+            }
+            $imap = new ezcMailImapTransport($this->params['host'], $this->params['port']);
+            $imap->authenticate($this->params['user'], $this->params['password']);
+            $imap->append("Sent", $mail->generate(), array(
+                "SEEN"
+            ));
+            $imap->disconnect();
             return true;
         }
     }
