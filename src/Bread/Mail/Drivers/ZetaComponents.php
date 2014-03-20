@@ -2,7 +2,6 @@
 namespace Bread\Mail\Drivers;
 
 use Bread\Configuration\Manager as Configuration;
-use Bread\Helpers\HTML\Page;
 use Bread\Mail\Interfaces;
 use Bread\Mail\Mailbox\Model as Mailbox;
 use Bread\Mail\Model as Mail;
@@ -130,16 +129,10 @@ class ZetaComponents implements Interfaces\Driver
             $mail->addHeader('In-Reply-To', $message->getHeader('In-Reply-To', true));
             foreach ($message->fetchParts() as $part) {
                 if ($part instanceof ezcMailText) {
-                    $body = $part->generateBody();
                     if ($part->subType === 'html') {
-                        $page = new Page(html_entity_decode($body));
-                        $page->query('blockquote')->remove();
-                        $body = htmlspecialchars_decode(strip_tags((string) $page));
                         $mail->type = Mail::TEXT_HTML;
                     }
-                    $body = preg_replace("/(-+Original body-+\r?\n|-+Messaggio originale-+\r?\n)?(From: .*\r?\n|Da: .*\r?\n)?(Sent: .*\r?\n|Data: .*\r?\n|Inviato: .*\r?\n)?(To: .*\r?\n|A: .*\r?\n)?(Cc: .*\r?\n)?(Subject: .*\r?\n|Ogg: .*\r?\n|Oggetto: .*\r?\n)/ms", "", $body);
-                    $body = preg_replace("/(---BEST-MESSAGE-BEGIN---.*---BEST-MESSAGE-END---)?/ms", '', $body);
-                    $mail->body = trim($body);
+                    $mail->body = $part->generateBody();
                 } elseif ($part instanceof ezcMailFile) {
                     $file = new File();
                     $file->name = $part->contentDisposition->fileName;
@@ -154,11 +147,14 @@ class ZetaComponents implements Interfaces\Driver
         return $mailFetch;
     }
 
-    public function move($message, $from, $to)
+    public function move($message, $from, $to, $flag = null)
     {
         $imap = new ezcMailImapTransport($this->params['host'], $this->params['port']);
         $imap->authenticate($this->params['user'], $this->params['password']);
         $imap->selectMailbox($from);
+        if ($flag) {
+            $imap->setFlag($message, $flag);
+        }
         $copy = $imap->copyMessages($message, $to);
         $delete = $imap->delete($message);
         $delete = $imap->expunge();
