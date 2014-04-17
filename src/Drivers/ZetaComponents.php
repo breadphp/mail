@@ -138,6 +138,7 @@ class ZetaComponents implements Interfaces\Driver
                     $file->name = $part->contentDisposition->fileName;
                     $file->data = fopen($part->fileName, 'r');
                     $file->type = "{$part->contentType}/{$part->mimeType}";
+                    $file->size = $part->size;
                     $mail->addAttachment($file);
                 }
             }

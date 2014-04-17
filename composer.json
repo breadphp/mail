@@ -21,8 +21,8 @@
 		"zetacomponents/base" : "*"
 	},
 	"autoload" : {
-		"psr-0" : {
-			"Bread\\Mail" : "src"
+		"psr-4" : {
+			"Bread\\Mail\\" : "src"
 		}
 	}
 }
