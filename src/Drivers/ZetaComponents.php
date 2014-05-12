@@ -36,6 +36,9 @@ class ZetaComponents implements Interfaces\Driver
 
     public function send(Mail $model)
     {
+        if (!$model->to && !$model->cc && !$model->bcc) {
+            return false;
+        }
         if (Configuration::get(Mail::class, 'connection.requireAuthentication')) {
             $smtp = new ezcMailSmtpTransport($this->params['host'], $this->params['user'], $this->params['password'], $this->params['port']);
         } else {
