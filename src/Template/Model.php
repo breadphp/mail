@@ -14,6 +14,10 @@ class Model extends REST\Model
     protected $body;
 
     protected $html;
+
+    protected $bodyVars;
+
+    protected $subjectVars;
 }
 
 Configuration::defaults('Bread\Mail\Template\Model', array(
@@ -29,7 +33,15 @@ Configuration::defaults('Bread\Mail\Template\Model', array(
             'type' => 'text'
         ),
         'html' => array(
-            'type' => 'boolean'
+            'type' => 'integer'
+        ),
+        'bodyVars' => array(
+            'type' => 'string',
+            'multiple' => true
+        ),
+        'subjectVars' => array(
+            'type' => 'string',
+            'multiple' => true
         )
     )
 ));

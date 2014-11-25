@@ -136,9 +136,9 @@ class ZetaComponents implements Interfaces\Driver
                         $mail->type = Mail::TEXT_HTML;
                     }
                     $mail->body = $part->generateBody();
-                } elseif ($part instanceof ezcMailFile && $part->dispositionType === ezcMailFile::DISPLAY_ATTACHMENT) {
+                } elseif ($part instanceof ezcMailFile) {
                     $file = new File();
-                    $file->name = $part->contentDisposition->fileName;
+                    $file->name = $part->contentDisposition->fileName ? : $part->fileName;
                     $file->data = fopen($part->fileName, 'r');
                     $file->type = "{$part->contentType}/{$part->mimeType}";
                     $file->size = $part->size;
