@@ -132,10 +132,10 @@ class ZetaComponents implements Interfaces\Driver
             $mail->addHeader('In-Reply-To', $message->getHeader('In-Reply-To', true));
             foreach ($message->fetchParts() as $part) {
                 if ($part instanceof ezcMailText) {
-                    if ($part->subType === 'html') {
-                        $mail->type = Mail::TEXT_HTML;
+                    if ($part->subType === 'plain') {
+                        $mail->type = Mail::TEXT_PLAIN;
+                        $mail->body = $part->generateBody();
                     }
-                    $mail->body = $part->generateBody();
                 } elseif ($part instanceof ezcMailFile) {
                     $file = new File();
                     $file->name = $part->contentDisposition->fileName ? : $part->fileName;
