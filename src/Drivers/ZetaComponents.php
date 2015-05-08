@@ -135,6 +135,9 @@ class ZetaComponents implements Interfaces\Driver
                     if ($part->subType === 'plain') {
                         $mail->type = Mail::TEXT_PLAIN;
                         $mail->body = $part->generateBody();
+                    } else {
+                        $mail->type = Mail::TEXT_HTML;
+                        $mail->body = $part->generateBody();
                     }
                 } elseif ($part instanceof ezcMailFile) {
                     $file = new File();
